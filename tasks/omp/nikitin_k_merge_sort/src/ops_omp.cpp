@@ -3,14 +3,14 @@
 
 #include <omp.h>
 
+#include <chrono>
 #include <iostream>
+#include <memory>
 #include <numeric>
 #include <random>
-#include <chrono>
 #include <string>
 #include <thread>
 #include <vector>
-#include <memory>
 
 using namespace std::chrono_literals;
 using namespace nikitin_k_merge_sort_omp;
@@ -25,33 +25,34 @@ std::vector<int> nikitin_k_merge_sort_omp::getRandomVector(int sz) {
   return vec;
 }
 
-std::vector<int> nikitin_k_merge_sort_omp::Merge(const std::vector<int>& firstVector, const std::vector<int>& secondVector) {
-    std::vector<int> result(firstVector.size() + secondVector.size());
-    std::merge(firstVector.begin(), firstVector.end(), secondVector.begin(), secondVector.end(), result.begin());
-    return result;  
+std::vector<int> nikitin_k_merge_sort_omp::Merge(const std::vector<int>& firstVector,
+                                                 const std::vector<int>& secondVector) {
+  std::vector<int> result(firstVector.size() + secondVector.size());
+  std::merge(firstVector.begin(), firstVector.end(), secondVector.begin(), secondVector.end(), result.begin());
+  return result;
 }
 
 std::vector<int> nikitin_k_merge_sort_omp::radixSort(std::vector<int> vector) {
-    std::vector<int> freq;
-    for (int d = 0, maxElem = *max_element(vector.begin(), vector.end());
-        d <= (maxElem == 0 ? 1 : static_cast<int>(log10(abs(maxElem))) + 1); d++) {
-        std::vector<int> temp(vector.size());
-        int div = static_cast<int>(pow(10, d));
-        int min = vector[0] % (div * 10) / div;
-        int max = min;
-        for (const int num : vector) {
-            int curr = num % (div * 10) / div;
-            min = min < curr ? min : curr;
-            max = max > curr ? max : curr;
-        }
-        freq.assign(max - min + 1, 0);
-        for (const int num : vector) freq[num % (div * 10) / div - min]++;
-        for (int i = 0, sum = 0; i < static_cast<int>(freq.size()); i++) sum += freq[i], freq[i] = sum;
-        for (int i = static_cast<int>(vector.size()) - 1; i >= 0; i--)
-            temp[--freq[vector[i] % (div * 10) / div - min]] = vector[i];
-        vector = std::move(temp);
+  std::vector<int> freq;
+  for (int d = 0, maxElem = *max_element(vector.begin(), vector.end());
+    d <= (maxElem == 0 ? 1 : static_cast<int>(log10(abs(maxElem))) + 1); d++) {
+    std::vector<int> temp(vector.size());
+    int div = static_cast<int>(pow(10, d));
+    int min = vector[0] % (div * 10) / div;
+    int max = min;
+    for (const int num : vector) {
+        int curr = num % (div * 10) / div;
+        min = min < curr ? min : curr;
+        max = max > curr ? max : curr;
     }
-    return vector;
+    freq.assign(max - min + 1, 0);
+    for (const int num : vector) freq[num % (div * 10) / div - min]++;
+    for (int i = 0, sum = 0; i < static_cast<int>(freq.size()); i++) sum += freq[i], freq[i] = sum;
+    for (int i = static_cast<int>(vector.size()) - 1; i >= 0; i--)
+        temp[--freq[vector[i] % (div * 10) / div - min]] = vector[i];
+    vector = std::move(temp);
+  }
+  return vector;
 }
 
 bool TestOMPTaskSequential::pre_processing() {
@@ -70,10 +71,10 @@ bool TestOMPTaskSequential::pre_processing() {
 bool TestOMPTaskSequential::validation() {
   internal_order_test();
   // Проверяем, что входные данные заданы и содержат хотя бы один элемент
-   return taskData->inputs_count.size() == 1 && taskData->outputs_count.size() == 1 && taskData->inputs.size() == 1 &&
-         taskData->outputs.size() == 1 && taskData->inputs[0] != nullptr && taskData->outputs[0] != nullptr &&
-         taskData->inputs_count[0] == taskData->outputs_count[0] && taskData->inputs_count[0] >= 0 &&
-         taskData->outputs_count[0] >= 0;
+  return taskData->inputs_count.size() == 1 && taskData->outputs_count.size() == 1 && taskData->inputs.size() == 1 &&
+          taskData->outputs.size() == 1 && taskData->inputs[0] != nullptr && taskData->outputs[0] != nullptr &&
+          taskData->inputs_count[0] == taskData->outputs_count[0] && taskData->inputs_count[0] >= 0 &&
+          taskData->outputs_count[0] >= 0;
 }
 
 bool TestOMPTaskSequential::run() {

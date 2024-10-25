@@ -1,9 +1,9 @@
 // Copyright 2024 Nikitin Kirill
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include "core/task/include/task.hpp"
 
@@ -15,8 +15,7 @@ std::vector<int> radixSort(std::vector<int> vector);
 
 class TestOMPTaskSequential : public ppc::core::Task {
  public:
-  explicit TestOMPTaskSequential(std::shared_ptr<ppc::core::TaskData> taskData_)
-      : Task(std::move(taskData_)) {}
+  explicit TestOMPTaskSequential(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
   bool pre_processing() override;
   bool validation() override;
   bool run() override;
@@ -30,8 +29,7 @@ class TestOMPTaskSequential : public ppc::core::Task {
 
 class TestOMPTaskParallel : public ppc::core::Task {
  public:
-  explicit TestOMPTaskParallel(std::shared_ptr<ppc::core::TaskData> taskData_)
-      : Task(std::move(taskData_)){}
+  explicit TestOMPTaskParallel(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)){}
   bool pre_processing() override;
   bool validation() override;
   bool run() override;

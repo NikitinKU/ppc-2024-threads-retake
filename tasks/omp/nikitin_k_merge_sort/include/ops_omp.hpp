@@ -23,8 +23,6 @@ class TestOMPTaskSequential : public ppc::core::Task {
 
  private:
   std::vector<int> input_;
-  int res{};
-  std::string ops;
 };
 
 class TestOMPTaskParallel : public ppc::core::Task {
@@ -37,8 +35,6 @@ class TestOMPTaskParallel : public ppc::core::Task {
 
  private:
   std::vector<int> input_;
-  int res{};
-  std::string ops;
 };
 
 }  // namespace nikitin_k_merge_sort_omp

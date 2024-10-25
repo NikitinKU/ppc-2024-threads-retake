@@ -7,15 +7,15 @@
 
 #include "core/task/include/task.hpp"
 
-namespace nikitin_k_merge_sort_omp {
+namespace nikitin_k_merge_sort_tbb {
 
 std::vector<int> getRandomVector(int sz);
 std::vector<int> Merge(const std::vector<int>& firstVector, const std::vector<int>& secondVector);
 std::vector<int> radixSort(std::vector<int> vector);
 
-class TestOMPTaskSequential : public ppc::core::Task {
+class TestTBBTaskSequential : public ppc::core::Task {
  public:
-  explicit TestOMPTaskSequential(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
+  explicit TestTBBTaskSequential(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
   bool pre_processing() override;
   bool validation() override;
   bool run() override;
@@ -27,9 +27,9 @@ class TestOMPTaskSequential : public ppc::core::Task {
   std::string ops;
 };
 
-class TestOMPTaskParallel : public ppc::core::Task {
+class TestTBBTaskParallel : public ppc::core::Task {
  public:
-  explicit TestOMPTaskParallel(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
+  explicit TestTBBTaskParallel(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
   bool pre_processing() override;
   bool validation() override;
   bool run() override;
@@ -40,4 +40,4 @@ class TestOMPTaskParallel : public ppc::core::Task {
   std::string ops;
 };
 
-}  // namespace nikitin_k_merge_sort_omp
+}  // namespace nikitin_k_merge_sort_tbb

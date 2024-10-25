@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "omp/nikitin_k_merge_sort/include/ops_omp.hpp"
+#include "tbb/nikitin_k_merge_sort/include/ops_tbb.hpp"
 
 TEST(nikitin_k_merge_sort, Test_Sequential_Sort) {
-  std::vector<int> vec = nikitin_k_merge_sort_omp::getRandomVector(100);
+  std::vector<int> vec = nikitin_k_merge_sort_tbb::getRandomVector(100);
   std::vector<int> sorted_ref = vec;  // Создаем копию для сравнения
 
   // Ожидаемый результат сортировки
@@ -20,18 +20,18 @@ TEST(nikitin_k_merge_sort, Test_Sequential_Sort) {
   taskDataSeq->outputs_count.emplace_back(vec.size());
 
   // Создаем Task для последовательной сортировки
-  nikitin_k_merge_sort_omp::TestOMPTaskSequential testOmpTaskSequential(taskDataSeq);
-  ASSERT_EQ(testOmpTaskSequential.validation(), true);
-  testOmpTaskSequential.pre_processing();
-  testOmpTaskSequential.run();
-  testOmpTaskSequential.post_processing();
+  nikitin_k_merge_sort_tbb::TestTBBTaskSequential testTbbTaskSequential(taskDataSeq);
+  ASSERT_EQ(testTbbTaskSequential.validation(), true);
+  testTbbTaskSequential.pre_processing();
+  testTbbTaskSequential.run();
+  testTbbTaskSequential.post_processing();
 
   // Проверяем результат
   ASSERT_EQ(vec, sorted_ref);
 }
 
 TEST(nikitin_k_merge_sort, Test_Parallel_Sort) {
-  std::vector<int> vec = nikitin_k_merge_sort_omp::getRandomVector(100);
+  std::vector<int> vec = nikitin_k_merge_sort_tbb::getRandomVector(100);
   std::vector<int> sorted_ref = vec;  // Создаем копию для сравнения
 
   // Ожидаемый результат сортировки
@@ -45,18 +45,18 @@ TEST(nikitin_k_merge_sort, Test_Parallel_Sort) {
   taskDataPar->outputs_count.emplace_back(vec.size());
 
   // Создаем Task для параллельной сортировки
-  nikitin_k_merge_sort_omp::TestOMPTaskParallel testOmpTaskParallel(taskDataPar);
-  ASSERT_EQ(testOmpTaskParallel.validation(), true);
-  testOmpTaskParallel.pre_processing();
-  testOmpTaskParallel.run();
-  testOmpTaskParallel.post_processing();
+  nikitin_k_merge_sort_tbb::TestTBBTaskParallel testTbbTaskParallel(taskDataPar);
+  ASSERT_EQ(testTbbTaskParallel.validation(), true);
+  testTbbTaskParallel.pre_processing();
+  testTbbTaskParallel.run();
+  testTbbTaskParallel.post_processing();
 
   // Проверяем результат
   ASSERT_EQ(vec, sorted_ref);
 }
 
 TEST(nikitin_k_merge_sort, Test_Small_Vector_Sequential_Sort) {
-  std::vector<int> vec = nikitin_k_merge_sort_omp::getRandomVector(100);
+  std::vector<int> vec = nikitin_k_merge_sort_tbb::getRandomVector(100);
   std::vector<int> sorted_ref = vec;  // Создаем копию для сравнения
 
   // Create data
@@ -70,17 +70,17 @@ TEST(nikitin_k_merge_sort, Test_Small_Vector_Sequential_Sort) {
   taskDataPar->outputs_count.emplace_back(vec.size());
 
   // Create Task
-  nikitin_k_merge_sort_omp::TestOMPTaskSequential testOmpTaskParallel(taskDataPar);
-  ASSERT_EQ(testOmpTaskParallel.validation(), true);
-  ASSERT_TRUE(testOmpTaskParallel.pre_processing());
-  ASSERT_TRUE(testOmpTaskParallel.run());
-  ASSERT_TRUE(testOmpTaskParallel.post_processing());
+  nikitin_k_merge_sort_tbb::TestTBBTaskSequential testTbbTaskParallel(taskDataPar);
+  ASSERT_EQ(testTbbTaskParallel.validation(), true);
+  ASSERT_TRUE(testTbbTaskParallel.pre_processing());
+  ASSERT_TRUE(testTbbTaskParallel.run());
+  ASSERT_TRUE(testTbbTaskParallel.post_processing());
 
   ASSERT_EQ(vec, sorted_ref);
 }
 
 TEST(nikitin_k_merge_sort, test1) {
-  std::vector<int> vec = nikitin_k_merge_sort_omp::getRandomVector(40);
+  std::vector<int> vec = nikitin_k_merge_sort_tbb::getRandomVector(40);
   std::vector<int> sorted_ref = vec;
 
   // Create data
@@ -94,17 +94,17 @@ TEST(nikitin_k_merge_sort, test1) {
   taskDataPar->outputs_count.emplace_back(vec.size());
 
   // Create Task
-  nikitin_k_merge_sort_omp::TestOMPTaskSequential testOmpTaskParallel(taskDataPar);
-  ASSERT_EQ(testOmpTaskParallel.validation(), true);
-  ASSERT_TRUE(testOmpTaskParallel.pre_processing());
-  ASSERT_TRUE(testOmpTaskParallel.run());
-  ASSERT_TRUE(testOmpTaskParallel.post_processing());
+  nikitin_k_merge_sort_tbb::TestTBBTaskSequential testTbbTaskParallel(taskDataPar);
+  ASSERT_EQ(testTbbTaskParallel.validation(), true);
+  ASSERT_TRUE(testTbbTaskParallel.pre_processing());
+  ASSERT_TRUE(testTbbTaskParallel.run());
+  ASSERT_TRUE(testTbbTaskParallel.post_processing());
 
   ASSERT_EQ(vec, sorted_ref);
 }
 
 TEST(nikitin_k_merge_sort, Test_Small_Vector_Parallel_Sort) {
-  std::vector<int> vec = nikitin_k_merge_sort_omp::getRandomVector(10);
+  std::vector<int> vec = nikitin_k_merge_sort_tbb::getRandomVector(10);
   std::vector<int> sorted_ref = vec;  // Создаем копию для сравнения
 
   // Ожидаемый результат сортировки
@@ -118,11 +118,11 @@ TEST(nikitin_k_merge_sort, Test_Small_Vector_Parallel_Sort) {
   taskDataPar->outputs_count.emplace_back(vec.size());
 
   // Создаем Task для параллельной сортировки
-  nikitin_k_merge_sort_omp::TestOMPTaskParallel testOmpTaskParallel(taskDataPar);
-  ASSERT_EQ(testOmpTaskParallel.validation(), true);
-  testOmpTaskParallel.pre_processing();
-  testOmpTaskParallel.run();
-  testOmpTaskParallel.post_processing();
+  nikitin_k_merge_sort_tbb::TestTBBTaskParallel testTbbTaskParallel(taskDataPar);
+  ASSERT_EQ(testTbbTaskParallel.validation(), true);
+  testTbbTaskParallel.pre_processing();
+  testTbbTaskParallel.run();
+  testTbbTaskParallel.post_processing();
 
   // Проверяем результат
   ASSERT_EQ(vec, sorted_ref);

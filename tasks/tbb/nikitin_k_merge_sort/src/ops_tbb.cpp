@@ -1,8 +1,10 @@
 // Copyright 2024 Nikitin Kirill
-#include "omp/nikitin_k_merge_sort/include/ops_omp.hpp"
 
-#include <omp.h>
+#include "tbb/nikitin_k_merge_sort/include/ops_tbb.hpp"
 
+#include <tbb/tbb.h>
+
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -13,9 +15,9 @@
 #include <vector>
 
 using namespace std::chrono_literals;
-using namespace nikitin_k_merge_sort_omp;
+using namespace nikitin_k_merge_sort_tbb;
 
-std::vector<int> nikitin_k_merge_sort_omp::getRandomVector(int sz) {
+std::vector<int> nikitin_k_merge_sort_tbb::getRandomVector(int sz) {
   std::random_device dev;
   std::mt19937 gen(dev());
   std::vector<int> vec(sz);
@@ -25,14 +27,14 @@ std::vector<int> nikitin_k_merge_sort_omp::getRandomVector(int sz) {
   return vec;
 }
 
-std::vector<int> nikitin_k_merge_sort_omp::Merge(const std::vector<int>& firstVector,
+std::vector<int> nikitin_k_merge_sort_tbb::Merge(const std::vector<int>& firstVector,
                                                  const std::vector<int>& secondVector) {
   std::vector<int> result(firstVector.size() + secondVector.size());
   std::merge(firstVector.begin(), firstVector.end(), secondVector.begin(), secondVector.end(), result.begin());
   return result;
 }
 
-std::vector<int> nikitin_k_merge_sort_omp::radixSort(std::vector<int> vector) {
+std::vector<int> nikitin_k_merge_sort_tbb::radixSort(std::vector<int> vector) {
   std::vector<int> freq;
   for (int d = 0, maxElem = *max_element(vector.begin(), vector.end());
        d <= (maxElem == 0 ? 1 : static_cast<int>(log10(abs(maxElem))) + 1); d++) {
@@ -55,7 +57,7 @@ std::vector<int> nikitin_k_merge_sort_omp::radixSort(std::vector<int> vector) {
   return vector;
 }
 
-bool TestOMPTaskSequential::pre_processing() {
+bool TestTBBTaskSequential::pre_processing() {
   internal_order_test();
   // Init vectors
   input_ = std::vector<int>(taskData->inputs_count[0]);
@@ -68,7 +70,7 @@ bool TestOMPTaskSequential::pre_processing() {
   return true;
 }
 
-bool TestOMPTaskSequential::validation() {
+bool TestTBBTaskSequential::validation() {
   internal_order_test();
   // Проверяем, что входные данные заданы и содержат хотя бы один элемент
   return taskData->inputs_count.size() == 1 && taskData->outputs_count.size() == 1 && taskData->inputs.size() == 1 &&
@@ -77,7 +79,7 @@ bool TestOMPTaskSequential::validation() {
          taskData->outputs_count[0] >= 0;
 }
 
-bool TestOMPTaskSequential::run() {
+bool TestTBBTaskSequential::run() {
   internal_order_test();
   try {
     std::vector<int> freq;
@@ -105,7 +107,7 @@ bool TestOMPTaskSequential::run() {
   }
 }
 
-bool TestOMPTaskSequential::post_processing() {
+bool TestTBBTaskSequential::post_processing() {
   internal_order_test();
   auto* outputs = reinterpret_cast<int*>(taskData->outputs[0]);
   for (size_t i = 0; i < input_.size(); i++) {
@@ -114,7 +116,7 @@ bool TestOMPTaskSequential::post_processing() {
   return true;
 }
 
-bool TestOMPTaskParallel::pre_processing() {
+bool TestTBBTaskParallel::pre_processing() {
   internal_order_test();
   // Init vectors
   try {
@@ -127,7 +129,7 @@ bool TestOMPTaskParallel::pre_processing() {
   }
 }
 
-bool TestOMPTaskParallel::validation() {
+bool TestTBBTaskParallel::validation() {
   internal_order_test();
   // Check count elements of output
   return taskData->inputs_count.size() == 1 && taskData->outputs_count.size() == 1 && taskData->inputs.size() == 1 &&
@@ -136,24 +138,26 @@ bool TestOMPTaskParallel::validation() {
          taskData->outputs_count[0] >= 0;
 }
 
-bool TestOMPTaskParallel::run() {
+bool TestTBBTaskParallel::run() {
   internal_order_test();
   try {
+    size_t resultSize = input_.size();
+    size_t num_threads = tbb::this_task_arena::max_concurrency();
     std::vector<int> result;
-    int resultSize = input_.size();
-#pragma omp parallel shared(result, resultSize)
-    {
-      int currentThread = omp_get_thread_num();
-      int threadNum = std::min(omp_get_num_threads(), resultSize);
-      if (currentThread < resultSize) {
-        int step = resultSize / threadNum;
-        int left = step * currentThread;
-        int right = (currentThread == threadNum - 1) ? resultSize : step * (currentThread + 1);
-        std::vector<int> input_Local = radixSort(std::vector<int>(input_.begin() + left, input_.begin() + right));
-#pragma omp critical
-        result = Merge(result, input_Local);
-      }
-    }
+    tbb::spin_mutex resultMutex;
+
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, resultSize, (resultSize + num_threads - 1) / num_threads),
+                      [&](const tbb::blocked_range<size_t>& r) {
+                        size_t left = r.begin();
+                        size_t right = r.end();
+                        std::vector<int> input_Local =
+                            radixSort(std::vector<int>(input_.begin() + left, input_.begin() + right));
+                        {
+                          tbb::spin_mutex::scoped_lock lock(resultMutex);
+                          result = Merge(result, input_Local);
+                        }
+                      });
+
     input_ = result;
     return true;
   } catch (...) {
@@ -161,7 +165,7 @@ bool TestOMPTaskParallel::run() {
   }
 }
 
-bool TestOMPTaskParallel::post_processing() {
+bool TestTBBTaskParallel::post_processing() {
   internal_order_test();
   for (size_t i = 0; i < input_.size(); i++) {
     reinterpret_cast<int*>(taskData->outputs[0])[i] = input_[i];

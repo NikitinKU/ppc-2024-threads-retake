@@ -14,9 +14,9 @@ TEST(nikitin_k_merge_sort, Test_Sequential_Sort) {
 
   // Создаем TaskData для последовательной задачи
   std::shared_ptr<ppc::core::TaskData> taskDataSeq = std::make_shared<ppc::core::TaskData>();
-  taskDataSeq->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
+  taskDataSeq->inputs.emplace_back(reinterpret_cast<uint8_t *>(vec.data()));
   taskDataSeq->inputs_count.emplace_back(vec.size());
-  taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
+  taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t *>(vec.data()));
   taskDataSeq->outputs_count.emplace_back(vec.size());
 
   // Создаем Task для последовательной сортировки
@@ -39,9 +39,9 @@ TEST(nikitin_k_merge_sort, Test_Parallel_Sort) {
 
   // Создаем TaskData для параллельной задачи
   std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
-  taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
+  taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(vec.data()));
   taskDataPar->inputs_count.emplace_back(vec.size());
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
+  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t *>(vec.data()));
   taskDataPar->outputs_count.emplace_back(vec.size());
 
   // Создаем Task для параллельной сортировки
@@ -113,9 +113,9 @@ TEST(nikitin_k_merge_sort, Test_Small_Vector_Parallel_Sort) {
 
   // Создаем TaskData для параллельной задачи
   std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
-  taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
+  taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(vec.data()));
   taskDataPar->inputs_count.emplace_back(vec.size());
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
+  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t *>(vec.data()));
   taskDataPar->outputs_count.emplace_back(vec.size());
 
   // Создаем Task для параллельной сортировки

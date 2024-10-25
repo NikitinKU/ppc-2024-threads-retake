@@ -29,7 +29,7 @@ class TestOMPTaskSequential : public ppc::core::Task {
 
 class TestOMPTaskParallel : public ppc::core::Task {
  public:
-  explicit TestOMPTaskParallel(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)){}
+  explicit TestOMPTaskParallel(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
   bool pre_processing() override;
   bool validation() override;
   bool run() override;

@@ -103,7 +103,6 @@ TEST(nikitin_k_merge_sort, test1) {
   ASSERT_EQ(vec, sorted_ref);
 }
 
-
 TEST(nikitin_k_merge_sort, Test_Small_Vector_Parallel_Sort) {
   std::vector<int> vec = nikitin_k_merge_sort_omp::getRandomVector(10);
   std::vector<int> sorted_ref = vec;  // Создаем копию для сравнения
